@@ -1,4 +1,4 @@
 {
-    "root": ["./", "../img"],
+    "root": "./",
     "author": "Yutonie"
 }
