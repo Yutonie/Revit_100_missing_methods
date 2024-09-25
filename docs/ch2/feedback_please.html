@@ -210,10 +210,217 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="title-of-the-chapter">Title of the chapter</h1>
-<p>This is a great introduction.</p>
-<h2 id="section-1">Section 1</h2>
-<p>Markdown will dictates <em>most</em> of your <strong>book's structure</strong></p>
+                                <h1 id="python-logging">python logging</h1>
+<h2 id="🏆goal"><strong>🏆Goal</strong></h2>
+<p>使用python logging 套件來紀錄日誌，並理解logging的基本用法及流程原理。</p>
+<h2 id="📖reference"><strong>📖Reference</strong></h2>
+<p>python official doc: <a href="https://docs.python.org/zh-tw/3/library/logging.html" target="_blank">https://docs.python.org/zh-tw/3/library/logging.html</a>
+python logging tutorial: <a href="https://docs.python.org/3/howto/logging.html#logging-basic-tutorial" target="_blank">https://docs.python.org/3/howto/logging.html#logging-basic-tutorial</a>
+real python: <a href="https://realpython.com/python-logging/" target="_blank">https://realpython.com/python-logging/</a></p>
+<h2 id="🧑‍💻process"><strong>🧑‍💻Process</strong></h2>
+<ol>
+<li>Create a local new git branch from dev branch.
+(Remember set the Github &amp; Clickup integration on this task)<pre><code>$ git branch GT-1807_use-python-logging
+$ git switch GT-1807_use-python-logging
+$ git status
+$ git push --set-upstream origin GT-1807_use-python-logging
+</code></pre></li>
+<li>Following the <a href="https://realpython.com/python-logging/" target="_blank">real python</a> or <a href="https://docs.python.org/3/howto/logging.html#logging-basic-tutorial" target="_blank">python logging tutorial</a>  </li>
+<li>Create github pull request to waiting review.  </li>
+<li>If grant, rebase and merge to dev branch, then delete the branch GT-1807_use-python-logging</li>
+</ol>
+<h2 id="🖼️screenshotrecording"><strong>🖼️Screenshot/Recording</strong></h2>
+<ul>
+<li>The log(not in git trace) style like:<pre><code>2024-03-15 03:28:56,661 INFO ================
+2024-03-15 03:28:56,661 INFO Started
+2024-03-15 03:28:56,708 INFO gdal_convertdxf success : sample.dxf
+2024-03-15 03:28:56,708 INFO Finished
+</code></pre></li>
+<li>A Level Is Just an int</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th style="text-align:left">Numeric value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CRITICAL</td>
+<td style="text-align:left">50</td>
+</tr>
+<tr>
+<td>ERROR</td>
+<td style="text-align:left">40</td>
+</tr>
+<tr>
+<td>WARNING</td>
+<td style="text-align:left">30</td>
+</tr>
+<tr>
+<td>INFO</td>
+<td style="text-align:left">20</td>
+</tr>
+<tr>
+<td>DEBUG</td>
+<td style="text-align:left">10</td>
+</tr>
+<tr>
+<td>NOTSET</td>
+<td style="text-align:left">0</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Loggers(紀錄器) v.s Handler(處理器)
+Logger 建立記錄器，用 logging.basicConfig() 來設定訊息的格式樣貌。
+Handlers 可以將訊息傳送到不同檔案(例如傳送standard output stream螢幕或file檔案)。</li>
+<li>Filter(篩選): 可指定特地Level輸出，例如只要WARNING的訊息，不要ERROR 和CRITICAL ，關鍵字過濾，...</li>
+</ul>
+<h2 id="😏nice-to-have"><strong>😏Nice To Have</strong></h2>
+<ul>
+<li>use custom logger name</li>
+<li>custom logger format, include line number and function</li>
+<li>color full log
+```
+import logging</li>
+</ul>
+<p>class CustomFormatter(logging.Formatter):
+    grey = "\x1b[38;21m"
+    yellow = "\x1b[33;21m"
+    red = "\x1b[31;21m"
+    bold_red = "\x1b[31;1m"
+    reset = "\x1b[0m"</p>
+<pre><code>format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"
+
+FORMATS = {
+    logging.DEBUG: grey + format + reset,
+    logging.INFO: grey + format + reset,
+    logging.WARNING: yellow + format + reset,
+    logging.ERROR: red + format + reset,
+    logging.CRITICAL: bold_red + format + reset,
+}
+
+def format(self, record):
+    log_fmt = self.FORMATS.get(record.levelno)
+    formatter = logging.Formatter(log_fmt)
+    return formatter.format(record)
+</code></pre><p>logger = logging.getLogger('my_logger')
+logger.setLevel(logging.DEBUG)</p>
+<p>handler = logging.StreamHandler()
+handler.setFormatter(CustomFormatter())
+logger.addHandler(handler)</p>
+<p>logger.debug('This is a debug message.')
+logger.info('This is an info message.')
+logger.warning('This is a warning message.')
+logger.error('This is an error message.')
+logger.critical('This is a critical message.')</p>
+<pre><code>
+
+## **📋Summary**
+
+Python logging 會學習到以下幾點:
+* Work with Python’s logging module
+* Set up a basic logging configuration
+* Leverage log levels
+* Style your log messages with formatters
+
+
+
+## 😱Trouble/Debug
+
+Note: 小三角形可展開
+
+* ❌The logging not include the ogr2ogr.main() process information.
+Casue the [ogr2ogr source code](https://github.com/OSGeo/gdal/blob/master/swig/python/gdal-utils/osgeo_utils/samples/ogr2ogr.py) use print( ) method to warning in console.
+I had tried this [stackoverflow](https://stackoverflow.com/questions/63965865/capture-output-from-non-python-third-party-library-with-python-logger) method, but failed.
+
+
+
+
+
+
+
+## 🐣Other
+
+**範例一:** 不同level的信息
+</code></pre><p>import logging</p>
+<h1 id="基本配置">基本配置</h1>
+<p>logging.basicConfig(filename='log.log', filemode='w', 
+                    format="%(asctime)s %(levelname)s %(message)s")</p>
+<h1 id="詳httpsdocspythonorgzh-tw38librarylogginghtmlloggingbasicconfig">詳<a href="https://docs.python.org/zh-tw/3.8/library/logging.html#logging.basicConfig" target="_blank">https://docs.python.org/zh-tw/3.8/library/logging.html#logging.basicConfig</a></h1>
+<h1 id="預設setlevelloggingwarning，只會輸出warning等級以上信息">預設setLevel(logging.warning)，只會輸出warning等級以上信息</h1>
+<p>logging.debug('細節信息')
+logging.info('確認程序如期完成')
+logging.warning('程序發生意外，如磁盤不足')
+logging.error('某些功能無法執行')
+logging.critical('嚴重錯誤導致程式崩壞')</p>
+<pre><code>輸出內容到log檔案裡
+</code></pre><p>2023-08-16 12:25:24,859 WARNING 程序發生意外，如磁盤不足
+2023-08-16 12:25:24,859 ERROR 某些功能無法執行
+2023-08-16 12:25:24,859 CRITICAL 嚴重錯誤導致程式崩壞</p>
+<pre><code>註:其中的859是毫秒的意思
+
+----
+
+**範例二:** 自訂logger
+</code></pre><p>import logging</p>
+<h1 id="create-logger">create Logger</h1>
+<p>mylog = logging.getLogger('mylog')
+mylog.setLevel(logging.WARNING)</p>
+<h1 id="create-console-handler">create console handler</h1>
+<p>ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)</p>
+<h1 id="set-formatter">set formatter</h1>
+<p>formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')</p>
+<h1 id="add-formatter-to-ch">add formatter to ch</h1>
+<p>ch.setFormatter(formatter)</p>
+<h1 id="add-ch-to-mylog">add ch to mylog</h1>
+<p>mylog.addHandler(ch)</p>
+<p>mylog.debug('debug message')
+mylog.info('info message')
+mylog.warning('warn message')
+mylog.error('error message')
+mylog.critical('critical message')</p>
+<pre><code>
+----
+
+**範例三:** 截取python錯誤訊息
+</code></pre><p>import logging</p>
+<p>logging.basicConfig(filename='log.log', filemode='w', 
+                    format="%(asctime)s %(levelname)s %(message)s")</p>
+<h1 id="截取錯誤內容，並紀錄到log">截取錯誤內容，並紀錄到log</h1>
+<p>try:
+    x = x/2
+except Exception as e:
+    logging.warning('warning message' + str(e))    #簡化的錯誤訊息
+    logging.exception('Error message :')    #詳細的錯誤訊息</p>
+<pre><code>
+----
+
+**範例四:** 初始化，啟動程式時開啟log
+</code></pre><h1 id="myapppy">myapp.py</h1>
+<p>import logging
+import mylib</p>
+<p>def main():
+    logging.basicConfig(filename='myapp.log', level=logging.INFO)
+    logging.info('Started')
+    mylib.do_something()
+    logging.info('Finished')</p>
+<p>if <strong>name</strong> == '<strong>main</strong>':
+    main()</p>
+<pre><code>```
+# mylib.py
+import logging
+
+def do_something():
+    logging.info('Doing something')
+</code></pre><hr></hr>
+<p>Author: YuTonie</p>
+<p>Operating System: Windows 11</p>
+<p>Tool Version:</p>
+<p>e.g.</p>
 
                                 
                                 </section>
@@ -253,7 +460,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"We love feedback","level":"1.3.1","depth":2,"previous":{"title":"ch2","level":"1.3","depth":1,"path":"ch2/README.md","ref":"ch2/README.md","articles":[{"title":"We love feedback","level":"1.3.1","depth":2,"path":"ch2/feedback_please.md","ref":"ch2/feedback_please.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["livereload"],"root":"./book","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"livereload":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Yutonie","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"gitbook":"*"},"file":{"path":"ch2/feedback_please.md","mtime":"2024-09-24T07:36:10.166Z","type":"markdown"},"gitbook":{"version":"5.1.4","time":"2024-09-25T09:29:06.564Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"We love feedback","level":"1.3.1","depth":2,"previous":{"title":"ch2","level":"1.3","depth":1,"path":"ch2/README.md","ref":"ch2/README.md","articles":[{"title":"We love feedback","level":"1.3.1","depth":2,"path":"ch2/feedback_please.md","ref":"ch2/feedback_please.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["livereload"],"root":"./book","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"livereload":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Yutonie","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"gitbook":"*"},"file":{"path":"ch2/feedback_please.md","mtime":"2024-09-25T15:11:58.260Z","type":"markdown"},"gitbook":{"version":"5.1.4","time":"2024-09-25T15:12:56.635Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>

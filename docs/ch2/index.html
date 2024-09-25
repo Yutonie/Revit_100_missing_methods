@@ -212,8 +212,284 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="introduction">Introduction</h1>
-<p>早安你好</p>
+                                <h1 id="python-threading">python threading</h1>
+<h2 id="介紹">介紹</h2>
+<p>:::success
+在 Python 中若要撰寫多執行緒（multithreading）的平行化程式，最基本的方式是使用 threading 這個模組來建立子執行緒。<a href="https://blog.gtwang.org/programming/python-threading-multithreaded-programming-tutorial/" target="_blank">參考</a>
+:::</p>
+<h2 id="教學參考">教學參考</h2>
+<p>python官方文件:(中文翻譯會有大陸、台灣用詞落差)
+<a href="https://docs.python.org/3.8/library/threading.html" target="_blank">https://docs.python.org/3.8/library/threading.html</a>
+中文範例:
+<a href="https://steam.oxxostudio.tw/category/python/library/threading.html" target="_blank">https://steam.oxxostudio.tw/category/python/library/threading.html</a>
+進程、線程、協程:
+<a href="https://ithelp.ithome.com.tw/articles/10242047" target="_blank">https://ithelp.ithome.com.tw/articles/10242047</a>
+用Queue模組
+<a href="https://docs.python.org/zh-tw/3/library/queue.html" target="_blank">https://docs.python.org/zh-tw/3/library/queue.html</a></p>
+<h2 id="模組功能">模組功能</h2>
+<ul>
+<li><p>threading.Thread()</p>
+<ul>
+<li>start() 開始執行程序</li>
+<li>join() 等待程序結束</li>
+</ul>
+</li>
+<li><p>Lock(鎖定)</p>
+<ul>
+<li>當Thread執行程序時用了lock.require</li>
+</ul>
+</li>
+<li>Event(事件)</li>
+</ul>
+<h2 id="語法">語法</h2>
+<pre><code class="lang-python"><span class="hljs-keyword">import</span> threading    <span class="hljs-comment">#調用threading package</span>
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">Hi</span>():
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">'nothing'</span>)
+
+AA = threading.Thread(target=Hi)    <span class="hljs-comment">#AA為多執行緒，並呼叫Hi涵式</span>
+AA.start()     <span class="hljs-comment">#開始</span>
+AA.join()    <span class="hljs-comment">#等待完成</span>
+
+lock = threading.Lock()    <span class="hljs-comment">#建立鎖定</span>
+lock.acquire()  <span class="hljs-comment">#獲得鎖定</span>
+lock.release()  <span class="hljs-comment">#釋放鎖定</span>
+
+event = threading.Event()   <span class="hljs-comment">#註冊事件</span>
+event.wait() <span class="hljs-comment">#等待事件觸發</span>
+event.<span class="hljs-built_in">set</span>() <span class="hljs-comment">#觸發事件</span>
+event.clear()   <span class="hljs-comment">#觸發後還原事件</span>
+</code></pre>
+<h2 id="範例">範例</h2>
+<p><strong>範例一:</strong> 同時執行aa()和bb()函式</p>
+<pre><code>import threading
+import time
+
+def aa():
+    i = 0
+    while i&lt;5:
+        i = i + 1
+        time.sleep(0.5)
+        print('A:', i)
+
+def bb():
+    i = 0
+    while i&lt;50:
+        i = i + 10
+        time.sleep(0.5)
+        print('B:', i)
+
+a = threading.Thread(target=aa)  # 建立新的執行緒
+b = threading.Thread(target=bb)  # 建立新的執行緒
+
+a.start()  # 啟用執行緒
+b.start()  # 啟用執行緒
+
+'''輸出結果
+A: 1
+B: 10
+A: 2
+B: 20
+A: 3
+B: 30
+A: 4
+B: 40
+A: 5
+'''
+</code></pre><hr></hr>
+<p><strong>範例二:</strong> join()等待用法</p>
+<pre><code>import threading
+import time
+
+def aa():
+    i = 0
+    while i&lt;5:
+        i = i + 1
+        time.sleep(0.5)
+        print('A:', i)
+
+def bb():
+    i = 0
+    while i&lt;50:
+        i = i + 10
+        time.sleep(0.5)
+        print('B:', i)
+
+a = threading.Thread(target=aa)  # 建立新的執行緒
+b = threading.Thread(target=bb)  # 建立新的執行緒
+
+a.start()   # 啟用執行緒
+a.join()    # 加入等待
+b.start()   # b要等a執行完，才啟用執行緒
+
+'''輸出結果
+A: 1
+A: 2
+A: 3
+A: 4
+A: 5
+B: 10    --&gt;A結束後啟用B
+B: 20
+B: 30
+B: 40
+B: 50
+'''
+</code></pre><hr></hr>
+<p><strong>範例三:</strong> lock.acquire()和lock.release()</p>
+<pre><code># test threading.Lock()
+
+import threading
+import time
+
+def aa():
+    lock.acquire()
+    i = 0
+    while i&lt;5:
+        i = i + 1
+        time.sleep(0.5)
+        print('A:', i)
+    lock.release()
+
+def bb():
+    lock.acquire()
+    i = 0
+    while i&lt;50:
+        i = i + 10
+        time.sleep(0.5)
+        print('B:', i)
+    lock.release()
+
+
+a = threading.Thread(target=aa)  # 建立新的執行緒
+b = threading.Thread(target=bb)  # 建立新的執行緒
+lock = threading.Lock() # 啟用lock
+
+
+a.start()   # 啟用執行緒
+b.start()   # b因為被lock.acquire()，要等到a程序lock.release()才能運行
+
+'''輸出結果
+A: 1    --&gt;A和B同時啟用lock.acquire()
+A: 2
+A: 3
+A: 4
+A: 5
+B: 10    --&gt;A結束後lock.release()，啟用B
+B: 20
+B: 30
+B: 40
+B: 50
+'''
+</code></pre><hr></hr>
+<p><strong>範例四:</strong> call command和timeout</p>
+<pre><code># call command和timeout
+
+import os
+import threading
+
+
+# 超時5秒則停止
+def timeout():    
+    print("timeout 5 sec")
+    os._exit(0)
+
+# 啟動thread平行程序，計時5秒
+def thread():
+    global t
+    t = threading.Timer(5,timeout)
+    t.start()
+    return False
+
+# command輸入
+def cmd():
+    cmd = input("$ ")
+    if cmd == 'quit':
+        t.cancel()
+        return True
+    print(f"You command is : {cmd}")
+    t.cancel()
+    return False
+
+Flag = True
+while Flag:
+
+    if thread() or cmd():
+        break
+</code></pre><hr></hr>
+<p><strong>範例五:</strong> queue()和call command和timeout</p>
+<pre><code># 偽代碼
+
+cmd.start()
+timeout.start()
+
+if timeout:
+    cmd.stop()
+</code></pre><p>策略是</p>
+<ol>
+<li>def()計時方法，來監測是否timeout</li>
+<li>用input()代替command，將輸入命令丟到queue</li>
+<li>用thread執行，計時timeout()和input()</li>
+<li>if timeout()，則結束程式</li>
+</ol>
+<pre><code># call command on queue和timeout
+
+import os
+import threading
+import queue
+
+
+# 超時5秒則停止
+def timeout():    
+    print("timeout 5 sec")
+    os._exit(0)
+
+# 同步計時5秒
+def timethread():
+    global tt
+    tt = threading.Timer(5,timeout)
+    tt.start()
+    return False
+
+# 執行queue裡的cmd指令
+def workthread(q):
+    while True:
+        item = q.get()
+        if item is None:
+            break
+        print(item)
+
+# command輸入
+def cmd():
+    cmd = input("$ ")
+    tt.cancel()
+    if cmd == 'quit':
+        return True
+
+    q.put(f"You command is : {cmd}")
+    return False
+
+# 建立queue
+q = queue.Queue()
+
+# 啟動workthread平行程序，負責執行cmd指令
+worker = threading.Thread(target=workthread, args=(q,))
+worker.start()
+
+while True:
+
+    if timethread() or cmd():
+        break
+
+# workthread()結束
+q.put(None)
+worker.join()
+</code></pre><hr></hr>
+<h2 id="補充">補充</h2>
+<p>我對Process和Thread概念理解是，</p>
+<p>Process是在不同記憶體空間下共同執行多行緒
+Thread是在同個記憶體空間裡執行多行緒</p>
+<p>Process就像國道上的3條道路，3台車在不同線道行駛。
+Thread是在只有1條道路上，3台車同時向前行駛，因為共用同一條馬路，如果遇到車禍(互搶資源、死結)就掰掰了</p>
 
                                 
                                 </section>
@@ -257,7 +533,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"ch2","level":"1.3","depth":1,"next":{"title":"We love feedback","level":"1.3.1","depth":2,"path":"ch2/feedback_please.md","ref":"ch2/feedback_please.md","articles":[]},"previous":{"title":"Writing is nice","level":"1.2.1","depth":2,"path":"ch1/writing.md","ref":"ch1/writing.md","articles":[]},"articles":[{"title":"We love feedback","level":"1.3.1","depth":2,"path":"ch2/feedback_please.md","ref":"ch2/feedback_please.md","articles":[]}],"dir":"ltr"},"config":{"plugins":["livereload"],"root":"./book","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"livereload":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Yutonie","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"gitbook":"*"},"file":{"path":"ch2/README.md","mtime":"2024-09-24T09:08:14.354Z","type":"markdown"},"gitbook":{"version":"5.1.4","time":"2024-09-25T09:29:06.564Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"ch2","level":"1.3","depth":1,"next":{"title":"We love feedback","level":"1.3.1","depth":2,"path":"ch2/feedback_please.md","ref":"ch2/feedback_please.md","articles":[]},"previous":{"title":"Writing is nice","level":"1.2.1","depth":2,"path":"ch1/writing.md","ref":"ch1/writing.md","articles":[]},"articles":[{"title":"We love feedback","level":"1.3.1","depth":2,"path":"ch2/feedback_please.md","ref":"ch2/feedback_please.md","articles":[]}],"dir":"ltr"},"config":{"plugins":["livereload"],"root":"./book","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"livereload":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Yutonie","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"gitbook":"*"},"file":{"path":"ch2/README.md","mtime":"2024-09-25T15:12:25.587Z","type":"markdown"},"gitbook":{"version":"5.1.4","time":"2024-09-25T15:12:56.635Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
